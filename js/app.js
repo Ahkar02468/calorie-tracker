@@ -110,17 +110,48 @@ class Workout{
      }
 }
 
-const tracker = new CalorieTracker();
+class App{
+     constructor(){
+          this._tracker = new CalorieTracker();
 
-const breakfast  = new Meal('Bread', 1000);
-const drink = new Meal('Orange Juice', 300);
-tracker.addMeal(drink);
-tracker.addMeal(breakfast);
+          document.getElementById('meal-form').addEventListener('submit', this._newMeal.bind(this));
+          document.getElementById('workout-form').addEventListener('submit', this._newWorkout.bind(this));
+     }
 
-const run  = new Workout('run', 500);
-tracker.addWorkout(run);
+     _newMeal(e){
+          e.preventDefault();
+          console.log(this);
+          const name = document.getElementById('meal-name');
+          const calories = document.getElementById('meal-calories');
 
-// console.log(tracker._meals);
-// console.log(tracker._workouts);
-// console.log(tracker._totalCalorie);
+          if(name.value === '' || calories.value === ''){
+               alert('Meal form can not be empty.');
+               return;
+          }
+          const meal = new Meal(name.value, +calories.value);
+          this._tracker.addMeal(meal);
+          name.value = '';
+          calories.value = '';
+
+     }
+
+     _newWorkout(e){
+          e.preventDefault();
+          // console.log(this);
+          const name = document.getElementById('workout-name');
+          const calories = document.getElementById('workout-calories');
+
+          if(name.value === '' || calories.value === ''){
+               alert('Workout form can not be empty.');
+               return;
+          }
+          const workout = new Workout(name.value, +calories.value);
+          this._tracker.addWorkout(workout);
+          name.value = '';
+          calories.value = '';
+
+     }
+}
+
+const app = new App();
 
