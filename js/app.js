@@ -10,6 +10,7 @@ class CalorieTracker{
           this._displayCalorieComsumed();
           this._displayCalorieBurned();
           this._displayCalorieRemain();
+          this._displayProgressRemain();
           
      }
 
@@ -52,11 +53,36 @@ class CalorieTracker{
      }
 
      _displayCalorieRemain(){
-          const CalorieRemainEL = document.getElementById('calories-remaining');
+          const calorieRemainEL = document.getElementById('calories-remaining');
+          const calorieProgressEL = document.getElementById('calorie-progress');
           // console.log(burned);
           const remain = this._calorieLimit - this._totalCalorie;
 
-          CalorieRemainEL.innerHTML = remain;
+          calorieRemainEL.innerHTML = remain;
+
+          if(remain <= 0){
+               calorieRemainEL.parentElement.parentElement.classList.remove('bg-light');
+               calorieRemainEL.parentElement.parentElement.classList.add('bg-danger');
+               calorieProgressEL.classList.add('bg-danger');
+               calorieProgressEL.classList.remove('bg-success');
+          }else{
+               calorieRemainEL.parentElement.parentElement.classList.remove('bg-danger');
+               calorieRemainEL.parentElement.parentElement.classList.add('bg-light'); 
+               calorieProgressEL.classList.add('bg-success');
+               calorieProgressEL.classList.remove('bg-danger');
+          }
+     }
+
+     _displayProgressRemain(){
+          const calorieProgressEL = document.getElementById('calorie-progress');
+          // console.log(burned);
+          const percent = (this._totalCalorie / this._calorieLimit) * 100;
+          const width = Math.min(percent, 100);
+          // console.log(width);
+
+          calorieProgressEL.style.width = `${width}%`;
+          // console.log(calorieProgressEL.classList);
+          
      }
      //need to render under method when the method is called in constructor and as soon as the instace is changed
      _render(){
@@ -64,6 +90,7 @@ class CalorieTracker{
           this._displayCalorieComsumed();
           this._displayCalorieBurned();
           this._displayCalorieRemain();
+          this._displayProgressRemain()
      }
 }
 
