@@ -18,12 +18,14 @@ class CalorieTracker{
      addMeal(meal){
           this._meals.push(meal);
           this._totalCalorie += meal.calorie;
+          this._displayAddedMeal(meal);
           this._render();
      }
 
      addWorkout(workout){
           this._workouts.push(workout);
           this._totalCalorie -= workout.calorie;
+          this._displayAddedWokout(workout);
           this._render()
      }
 
@@ -83,6 +85,54 @@ class CalorieTracker{
           calorieProgressEL.style.width = `${width}%`;
           // console.log(calorieProgressEL.classList);
           
+     }
+
+     _displayAddedMeal(meal){
+          const mealsElement = document.getElementById('meal-items');
+          const mealElement = document.createElement('div');
+          mealElement.innerHTML = `
+               <div class="card my-2">
+               <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                    <h4 class="mx-1">${meal.name}</h4>
+                         <div
+                              class="fs-1 bg-primary text-white text-center rounded-2 px-2 px-sm-5"
+                         >
+                              ${meal.calorie}
+                         </div>
+                    <button class="delete btn btn-danger btn-sm mx-2">
+                         <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    </div>
+               </div>
+          </div>
+          `; 
+
+          mealsElement.appendChild(mealElement);
+     }
+
+     _displayAddedWokout(workout){
+          const workoutsElement = document.getElementById('workout-items');
+          const workoutElement = document.createElement('div');
+          workoutElement.innerHTML = `
+          <div class="card my-2">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h4 class="mx-1">${workout.name}</h4>
+                  <div
+                    class="fs-1 bg-secondary text-white text-center rounded-2 px-2 px-sm-5"
+                  >
+                    ${workout.calorie}
+                  </div>
+                  <button class="delete btn btn-danger btn-sm mx-2">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `; 
+
+          workoutsElement.appendChild(workoutElement);
      }
      //need to render under method when the method is called in constructor and as soon as the instace is changed
      _render(){
