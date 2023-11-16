@@ -29,6 +29,36 @@ class CalorieTracker{
           this._render()
      }
 
+     removeMeal(id) {
+          console.log(this._meals);
+          const index = this._meals.findIndex((meal) => meal.id === id);
+          console.log(index);
+          
+          if (index !== -1) {
+               const meal = this._meals[index];
+               this._totalCalorie -= meal.calorie;
+          //   Storage.updateTotalCalories(this._totalCalories);
+               this._meals.splice(index, 1);
+          //   Storage.removeMeal(id);
+               this._render();
+          }
+     }
+
+     
+     removeWrokout(id) {
+     const index = this._workouts.findIndex((workout) => workout.id === id);
+     console.log(index);
+     
+     if (index !== -1) {
+          const workout = this._workouts[index];
+          this._totalCalorie += workout.calorie;
+     //   Storage.updateTotalCalories(this._totalCalories);
+          this._workouts.splice(index, 1);
+     //   Storage.removeMeal(id);
+          this._render();
+     }
+     }
+
      //prvate method
      _displayCalorieTotal(){
           const CalorieTotalEL = document.getElementById('calories-total');
@@ -90,8 +120,9 @@ class CalorieTracker{
      _displayAddedMeal(meal){
           const mealsElement = document.getElementById('meal-items');
           const mealElement = document.createElement('div');
+          mealElement.classList.add('card', 'my-2')
+          mealElement.setAttribute('data-id', meal.id);
           mealElement.innerHTML = `
-               <div class="card my-2">
                <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                     <h4 class="mx-1">${meal.name}</h4>
@@ -105,7 +136,6 @@ class CalorieTracker{
                     </button>
                     </div>
                </div>
-          </div>
           `; 
 
           mealsElement.appendChild(mealElement);
@@ -114,8 +144,9 @@ class CalorieTracker{
      _displayAddedWokout(workout){
           const workoutsElement = document.getElementById('workout-items');
           const workoutElement = document.createElement('div');
+          workoutElement.classList.add('card', 'my-2')
+          workoutElement.setAttribute('data-id', workout.id);
           workoutElement.innerHTML = `
-          <div class="card my-2">
               <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                   <h4 class="mx-1">${workout.name}</h4>
@@ -129,7 +160,6 @@ class CalorieTracker{
                   </button>
                 </div>
               </div>
-            </div>
           `; 
 
           workoutsElement.appendChild(workoutElement);
@@ -166,6 +196,20 @@ class App{
 
           document.getElementById('meal-form').addEventListener('submit', this._newFoodAndWorkout.bind(this, 'meal'));
           document.getElementById('workout-form').addEventListener('submit', this._newFoodAndWorkout.bind(this, 'workout'));
+          document.getElementById('meal-items').addEventListener('click', this._removeItem.bind(this, 'meal'));
+          document.getElementById('workout-items').addEventListener('click', this._removeItem.bind(this, 'workout'));
+     }
+
+     _removeItem(type, e){
+          // console.log(e.target);
+          if(e.target.classList.contains('delete') || e.target.classList.contains('fa-xmark')){
+               const id = e.target.closest('.card').getAttribute('data-id');
+               type === 'meal'
+               ? this._tracker.removeMeal(id)
+               : this._tracker.removeWrokout(id);
+
+               e.target.closest('.card').remove();
+          }
      }
 
      _newFoodAndWorkout(type, e){
