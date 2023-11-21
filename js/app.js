@@ -1,6 +1,6 @@
 class CalorieTracker{
      constructor(){
-          this._calorieLimit = 2000;
+          this._calorieLimit = Storage.getCalorieLimit();
           this._totalCalorie = 0;
           this._meals = [];
           this._workouts = [];
@@ -36,6 +36,8 @@ class CalorieTracker{
           
           if (index !== -1) {
                const meal = this._meals[index];
+               // console.log(this._meals[index]);
+               // console.log(meal);
                this._totalCalorie -= meal.calorie;
           //   Storage.updateTotalCalories(this._totalCalories);
                this._meals.splice(index, 1);
@@ -49,14 +51,28 @@ class CalorieTracker{
      const index = this._workouts.findIndex((workout) => workout.id === id);
      console.log(index);
      
-     if (index !== -1) {
-          const workout = this._workouts[index];
-          this._totalCalorie += workout.calorie;
-     //   Storage.updateTotalCalories(this._totalCalories);
-          this._workouts.splice(index, 1);
-     //   Storage.removeMeal(id);
+          if (index !== -1) {
+               const workout = this._workouts[index];
+               this._totalCalorie += workout.calorie;
+          //   Storage.updateTotalCalories(this._totalCalories);
+               this._workouts.splice(index, 1);
+          //   Storage.removeMeal(id);
+               this._render();
+          }
+     }
+
+     changeLimit(value){
+          this._calorieLimit = value;
+          Storage.setCalorieLimit(value);
+          this._displayCalorieLimit();
           this._render();
      }
+
+     reset(){
+          this._totalCalorie = 0;
+          this._meals = [];
+          this._workouts = [];
+          this._render();
      }
 
      //prvate method
@@ -190,6 +206,22 @@ class Workout{
      }
 }
 
+class Storage{
+     static getCalorieLimit(defaultCalorieLimit = 2000){
+          let newcalorieLimit;
+          if(localStorage.getItem('calorieLimit') === null){
+               newcalorieLimit = defaultCalorieLimit;
+          }else{
+               newcalorieLimit = +localStorage.getItem('calorieLimit');
+          }
+          return newcalorieLimit;
+     }
+
+     static setCalorieLimit(calorielimit){
+          localStorage.setItem('calorieLimit', calorielimit);
+     }
+}
+
 class App{
      constructor(){
           this._tracker = new CalorieTracker();
@@ -198,6 +230,25 @@ class App{
           document.getElementById('workout-form').addEventListener('submit', this._newFoodAndWorkout.bind(this, 'workout'));
           document.getElementById('meal-items').addEventListener('click', this._removeItem.bind(this, 'meal'));
           document.getElementById('workout-items').addEventListener('click', this._removeItem.bind(this, 'workout'));
+          document.getElementById('filter-meals').addEventListener('keyup', this._filterItems.bind(this, 'meal'));
+          document.getElementById('filter-workouts').addEventListener('keyup', this._filterItems.bind(this, 'workout'));
+          document.getElementById('reset').addEventListener('click', this._reset.bind(this));
+          document.getElementById('limit-form').addEventListener('submit', this._changeCalorieLimit.bind(this));
+     }
+
+     _filterItems(type, e){
+          const typedText = e.target.value.toLowerCase();
+          console.log(typedText);
+          document.querySelectorAll(`#${type}-items .card`).forEach(item => {
+               const name = item.firstElementChild.firstElementChild.textContent;
+               console.log(name);
+
+               if(name.toLowerCase().indexOf(typedText) !== -1){
+                    item.style.display = 'block';
+               }else{
+                    item.style.display = 'none';
+               }
+          })
      }
 
      _removeItem(type, e){
@@ -237,6 +288,31 @@ class App{
                toggle: true
           });
 
+     }
+
+     _reset(){
+          this._tracker.reset();
+          document.getElementById('meal-items').innerHTML = '';
+          document.getElementById('workout-items').innerHTML = '';
+          document.getElementById('filter-meals').value = '';
+          document.getElementById('filter-workouts').value = '';
+     }
+
+     _changeCalorieLimit(e){
+          e.preventDefault();
+          const calorieLimit = document.getElementById('limit');
+          if(calorieLimit.value === ''){
+               alert('The form should not be empty.');
+               return;
+          }
+          this._tracker.changeLimit(+calorieLimit.value);
+          // console.log(calorieLimit.value);
+          calorieLimit.value = '';
+
+          //close the modal
+          const modalElement = document.getElementById('limit-modal');
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          modal.hide();
      }
 }
 
