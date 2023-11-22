@@ -44,6 +44,7 @@ class CalorieTracker{
                const meal = this._meals[index];
                // console.log(this._meals[index]);
                // console.log(meal);
+               confirm('Are you sure you want to delete?');
                this._totalCalorie -= meal.calorie;
                Storage.updateTotalCalorie(this._totalCalorie);
                this._meals.splice(index, 1);
@@ -59,6 +60,7 @@ class CalorieTracker{
      
           if (index !== -1) {
                const workout = this._workouts[index];
+               confirm('Are you sure you want to delete?');
                this._totalCalorie += workout.calorie;
                Storage.updateTotalCalorie(this._totalCalorie);
                this._workouts.splice(index, 1);
